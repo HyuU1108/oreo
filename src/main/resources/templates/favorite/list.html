@@ -17,37 +17,70 @@
 
     <style>
       body {
-        padding-top: 56px; /* Fixed navbar height */
+        padding-top: 56px;
         background-color: #f8f9fa;
       }
       .favorite-container {
-        max-width: 960px; /* 컨테이너 너비 */
-        margin: 4rem auto; /* 상하 여백 */
+        max-width: 960px;
+        margin: 4rem auto;
+      }
+      /* --- 카드 및 이미지 크기 고정 스타일 (restaurants/list.html과 동일) --- */
+      .restaurant-card {
+        /* 카드 클래스 명시 */
+        height: 250px; /* 카드 전체 높이 고정 */
+        overflow: hidden;
+      }
+      .restaurant-card .row.g-0 {
+        height: 100%;
+      }
+      .img-col {
+        display: flex;
+        align-items: stretch;
+        border-radius: var(--bs-card-inner-border-radius) 0 0
+          var(--bs-card-inner-border-radius);
+        overflow: hidden;
+        /* height 제거 (row 높이 100% 따름) */
       }
       .card-img-link {
         display: block;
         line-height: 0;
-        height: 100%; /* 부모 높이에 맞춤 */
+        height: 100%;
+        width: 100%;
+        cursor: pointer;
       }
       .card-img {
+        /* list-card-img 클래스명 통일 */
         width: 100%;
-        height: 100%; /* 부모 높이에 100% 맞춤 */
-        object-fit: cover; /* 비율 유지하며 꽉 채우기 */
-        border-radius: var(--bs-card-inner-border-radius) 0 0
-          var(--bs-card-inner-border-radius); /* 왼쪽 모서리만 둥글게 */
+        height: 100%;
+        object-fit: cover;
         transition: transform 0.2s ease-in-out;
       }
       .card-img-link:hover .card-img {
-        transform: scale(1.03);
+        transform: scale(1.05);
       }
-      /* 이미지 컬럼 높이 강제 (카드 높이 일관성 유지 위함) */
-      .img-col {
-        height: 200px; /* 원하는 기본 높이 설정 (조절 가능) */
+      .img-placeholder {
+        background-color: #e9ecef;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      @media (min-width: 768px) {
-        .img-col {
-          height: auto; /* 중간 크기 이상에서는 자동 높이 */
-        }
+      .info-col {
+        display: flex;
+        flex-direction: column;
+      }
+      .info-col .card-body {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding-bottom: 0.5rem;
+      }
+      .info-col .card-footer {
+        flex-shrink: 0;
+        border-top: 1px solid #f1f1f1;
+        background-color: #fff;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
       }
       .navbar {
         border-bottom: 1px solid #dee2e6;
@@ -55,23 +88,10 @@
       .card-title {
         font-weight: 600;
       }
-      .card-footer {
-        background-color: #fff;
-        border-top: 1px solid #f1f1f1;
-      }
       .action-buttons .btn,
       .action-buttons form {
         margin-left: 0.5rem;
         display: inline-block;
-      }
-      .img-placeholder {
-        border-radius: var(--bs-card-inner-border-radius) 0 0
-          var(--bs-card-inner-border-radius);
-        background-color: #e9ecef; /* 배경색 약간 진하게 */
-        height: 100%; /* 부모 높이에 맞춤 */
-        display: flex; /* Flexbox 사용 */
-        align-items: center; /* 수직 가운데 정렬 */
-        justify-content: center; /* 수평 가운데 정렬 */
       }
       .rating-stars .bi-star-fill,
       .rating-stars .bi-star-half {
@@ -79,6 +99,30 @@
       }
       .rating-stars .bi-star {
         color: #e0e0e0;
+      }
+      /* 작은 화면 처리 (restaurants/list.html과 동일하게) */
+      @media (max-width: 767.98px) {
+        .favorite-container {
+          padding-left: 1rem;
+          padding-right: 1rem;
+          margin-top: 2rem;
+        }
+        .restaurant-card {
+          height: auto;
+        }
+        .card .row.g-0 .img-col {
+          border-radius: var(--bs-card-inner-border-radius)
+            var(--bs-card-inner-border-radius) 0 0;
+          height: 200px;
+        }
+        .card .row.g-0 .info-col .card-footer {
+          border-top: 1px solid #f1f1f1;
+        }
+        .card .row.g-0 .card-img,
+        .card .row.g-0 .img-placeholder {
+          border-radius: var(--bs-card-inner-border-radius)
+            var(--bs-card-inner-border-radius) 0 0;
+        }
       }
     </style>
   </head>
@@ -212,9 +256,10 @@
       <div th:if="${favorites != null and !favorites.isEmpty()}">
         <div class="row row-cols-1 row-cols-md-2 g-4">
           <div class="col" th:each="restaurant : ${favorites}">
-            <div class="card h-100 shadow-sm">
+            <!-- 카드 클래스 추가 및 h-100 제거 -->
+            <div class="card shadow-sm restaurant-card">
               <div class="row g-0">
-                <!-- 이미지 컬럼 스타일 조정 -->
+                <!-- 이미지 컬럼 -->
                 <div class="col-md-4 img-col">
                   <a
                     th:href="@{/restaurants/{id}(id=${restaurant.id})}"
@@ -241,7 +286,6 @@
                       class="img-placeholder"
                     >
                       <i class="bi bi-image-alt fs-1 text-secondary"></i>
-                      <!-- 아이콘 색상 변경 -->
                     </div>
                     <div class="img-placeholder d-none">
                       <i
@@ -251,7 +295,7 @@
                   </a>
                 </div>
                 <!-- 정보 영역 -->
-                <div class="col-md-8 d-flex flex-column">
+                <div class="col-md-8 d-flex flex-column info-col">
                   <div class="card-body pb-2">
                     <h5
                       class="card-title fs-6 mb-1"
@@ -307,9 +351,7 @@
               </div>
             </div>
           </div>
-          <!-- /col -->
         </div>
-        <!-- /row -->
       </div>
 
       <!-- 찜이 비어있을 경우 -->
@@ -324,7 +366,6 @@
         </a>
       </div>
     </div>
-    <!-- /container -->
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
