@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  lang="ko"
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,65 +18,11 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     />
-    <style>
-      body {
-        padding-top: 56px;
-        background-color: #f8f9fa;
-      }
-      .card-header {
-        background-color: #e9ecef;
-      }
-      .info-section dt {
-        font-weight: 500;
-        color: #6c757d;
-        text-align: left;
-      }
-      .info-section dd {
-        margin-bottom: 0.75rem;
-      }
-      .image-display-area img {
-        max-height: 400px;
-        object-fit: contain;
-      }
-      .section-title {
-        font-size: 1.2rem;
-        font-weight: 500;
-        margin-bottom: 1rem;
-        color: #495057;
-        border-bottom: 1px solid #dee2e6;
-        padding-bottom: 0.5rem;
-      }
-      .card-footer {
-        background-color: #f8f9fa;
-      }
-      .card-footer .btn {
-        margin-left: 0.5rem;
-      }
-      .review-list-item {
-        border-bottom: 1px solid #eee;
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
-      }
-      .review-list-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-        margin-bottom: 0;
-      }
-      .rating-stars .bi-star-fill,
-      .rating-stars .bi-star-half {
-        color: #ffc107;
-      }
-      .rating-stars .bi-star {
-        color: #e0e0e0;
-      }
-      .navbar {
-        border-bottom: 1px solid #dee2e6;
-      }
-      .img-load-error {
-        font-size: 0.8rem;
-        padding: 0.5rem !important;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="@{/css/restaurant-detail.css}"
+    />
   </head>
   <body>
     <!-- 네비게이션 바 -->
@@ -461,15 +411,14 @@
           <a th:href="@{/restaurants}" class="btn btn-outline-secondary btn-sm"
             ><i class="bi bi-list-ul me-1"></i>목록</a
           >
-          <!-- *** 수정/삭제 버튼에 로그인 조건 추가 *** -->
           <a
-            th:if="${session.loginUser != null}"
+            sec:authorize="hasRole('ADMIN')"
             th:href="@{/restaurants/{id}/edit(id=${restaurant.id})}"
             class="btn btn-primary btn-sm"
             ><i class="bi bi-pencil-square me-1"></i>수정</a
           >
           <form
-            th:if="${session.loginUser != null}"
+            sec:authorize="hasRole('ADMIN')"
             th:action="@{/restaurants/{id}/delete(id=${restaurant.id})}"
             method="post"
             onsubmit="return confirm('정말로 삭제하시겠습니까?\n관련 리뷰와 즐겨찾기도 함께 삭제됩니다.');"
@@ -483,36 +432,7 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      // Bootstrap 5 Form Validation Script
-      (() => {
-        'use strict';
-        const forms = document.querySelectorAll('.needs-validation');
-        Array.from(forms).forEach((form) => {
-          form.addEventListener(
-            'submit',
-            (event) => {
-              if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-              }
-              form.classList.add('was-validated');
-            },
-            false
-          );
-        });
-      })();
-      // 이미지 로드 에러 처리
-      document.querySelectorAll('.img-load-error').forEach((el) => {
-        const img = el.previousElementSibling;
-        if (img && img.tagName === 'IMG') {
-          img.addEventListener('error', () => {
-            img.style.display = 'none';
-            el.style.display = 'block';
-          });
-        }
-      });
-    </script>
+    <script src="/js/validation.js"></script>
+    <script src="/js/image-error.js"></script>
   </body>
 </html>

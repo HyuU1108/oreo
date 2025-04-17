@@ -1,67 +1,38 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  lang="ko"
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title
       th:text="${pageTitle ?: (isEditMode ? '음식점 정보 수정' : '새 음식점 등록')}"
-    >
-      음식점 정보 입력
-    </title>
+    ></title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-      crossorigin="anonymous"
     />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     />
-    <style>
-      body {
-        padding-top: 56px; /* Fixed navbar height */
-        background-color: #f8f9fa;
-      }
-      .card-header {
-        background-color: #e9ecef;
-        font-weight: 500;
-      }
-      .current-image-preview img {
-        max-width: 200px; /* 미리보기 이미지 크기 조정 */
-        max-height: 200px;
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem; /* 부트스트랩 기본 둥근 모서리 */
-        margin-top: 0.5rem;
-      }
-      .img-load-error {
-        /* 이미지 로드 실패 메시지 스타일 */
-        font-size: 0.8rem;
-        padding: 0.5rem !important;
-      }
-      .invalid-feedback.d-block {
-        /* 유효성 검사 메시지 항상 보이도록 (필요 시) */
-        display: block !important;
-      }
-      .form-section-title {
-        /* 카드 헤더 스타일 조정 */
-        font-size: 1.1rem;
-        color: #343a40;
-      }
-      .navbar {
-        border-bottom: 1px solid #dee2e6;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="@{/css/restaurant-form.css}"
+    />
   </head>
   <body>
-    <!-- 네비게이션 바-->
+    <!-- 네비게이션 바 -->
     <nav
       class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm"
     >
       <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}">
-          <i class="bi bi-house-door-fill"></i> 메인
-        </a>
+        <a class="navbar-brand" th:href="@{/}"
+          ><i class="bi bi-house-door-fill"></i> 메인</a
+        >
         <button
           class="navbar-toggler"
           type="button"
@@ -76,18 +47,17 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" th:href="@{/restaurants}">
-                <i class="bi bi-card-checklist"></i> 음식점 목록
-              </a>
+              <a class="nav-link" th:href="@{/restaurants}"
+                ><i class="bi bi-card-checklist"></i> 음식점 목록</a
+              >
             </li>
             <li class="nav-item" th:if="${session.loginUser != null}">
-              <a class="nav-link" th:href="@{/favorites}">
-                <i class="bi bi-heart-fill text-danger"></i> 찜 목록
-              </a>
+              <a class="nav-link" th:href="@{/favorites}"
+                ><i class="bi bi-heart-fill text-danger"></i> 찜 목록</a
+              >
             </li>
           </ul>
           <div class="d-flex align-items-center">
-            <!-- 로그인 상태 사용자 메뉴 -->
             <div th:if="${session.loginUser != null}" class="navbar-text">
               <div class="dropdown">
                 <button
@@ -125,7 +95,6 @@
                 </ul>
               </div>
             </div>
-            <!-- 비로그인 상태 -->
             <div th:if="${session.loginUser == null}">
               <a
                 th:href="@{/login}"
@@ -143,15 +112,12 @@
     </nav>
 
     <div class="container mt-4 mb-5 col-lg-8 col-md-10">
-      <!-- 페이지 제목 및 뒤로가기 버튼 -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0 fs-4 fw-bold">
-          <!-- 제목 강조 -->
           <i
             class="me-2"
             th:classappend="${isEditMode ? 'bi bi-pencil-fill text-primary' : 'bi bi-plus-circle-fill text-success'}"
           ></i>
-          <!-- 아이콘 및 색상 변경 -->
           <span
             th:text="${pageTitle ?: (isEditMode ? '음식점 정보 수정' : '새 음식점 등록')}"
           ></span>
@@ -161,21 +127,18 @@
           class="btn btn-sm btn-outline-secondary"
         >
           <i class="bi bi-arrow-left me-1"></i>취소하고 돌아가기
-          <!-- 텍스트 변경 -->
         </a>
       </div>
 
-      <!-- 서버 측 글로벌 에러 메시지 -->
       <div
         th:if="${globalErrorMessage != null}"
         class="alert alert-danger d-flex align-items-center"
         role="alert"
       >
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        <div th:text="${globalErrorMessage}">Global error message</div>
+        <div th:text="${globalErrorMessage}"></div>
       </div>
 
-      <!-- === <form> 태그 시작 === -->
       <form
         th:object="${restaurantRequestDto}"
         th:action="${formAction}"
@@ -184,7 +147,6 @@
         class="needs-validation"
         novalidate
       >
-        <!-- 폼 유효성 검사 요약 메시지 -->
         <div
           th:if="${#fields.hasErrors('*') and globalErrorMessage == null}"
           class="alert alert-warning d-flex align-items-center mb-4"
@@ -195,19 +157,14 @@
             입력 내용을 다시 확인해주세요. 오류가 있는 항목이 표시됩니다.
           </div>
         </div>
-        <!-- === 요약 메시지 끝 === -->
 
-        <!-- 최종 카테고리 값 저장을 위한 hidden input -->
         <input type="hidden" id="finalCategory" th:field="*{category}" />
 
-        <!-- 기본 정보 카드 -->
         <div class="card shadow-sm mb-4">
           <div class="card-header form-section-title">
             <i class="bi bi-card-heading me-1"></i> 기본 정보
           </div>
           <div class="card-body p-4">
-            <!-- 패딩 추가 -->
-            <!-- 이름 (Floating Label 적용) -->
             <div class="form-floating mb-3">
               <input
                 type="text"
@@ -226,7 +183,6 @@
               ></div>
             </div>
 
-            <!-- 카테고리 -->
             <div class="mb-3">
               <label class="form-label"
                 >카테고리 <span class="text-danger">*</span></label
@@ -240,7 +196,6 @@
                     aria-describedby="categoryFeedback"
                   >
                     <option value="">-- 카테고리 선택 --</option>
-                    <!-- 초기 텍스트 변경 -->
                     <option
                       th:each="cat : ${allCategories}"
                       th:value="${cat}"
@@ -266,10 +221,8 @@
                   title="새 카테고리 입력/선택 전환"
                 >
                   <i class="bi bi-pencil-fill"></i>
-                  <!-- 아이콘 변경 -->
                 </button>
               </div>
-              <!-- 카테고리 유효성 검사 메시지 위치 조정 -->
               <div
                 id="categoryFeedback"
                 class="invalid-feedback d-block mt-1"
@@ -280,10 +233,8 @@
                 기존 카테고리를 선택하거나, 버튼을 눌러 새 카테고리를 직접
                 입력하세요.
               </div>
-              <!-- 안내 문구 추가 -->
             </div>
 
-            <!-- 주소 (Floating Label 적용) -->
             <div class="form-floating mb-3">
               <input
                 type="text"
@@ -301,7 +252,6 @@
               ></div>
             </div>
 
-            <!-- 전화번호 (Floating Label 적용) -->
             <div class="form-floating mb-3">
               <input
                 type="tel"
@@ -319,18 +269,13 @@
               ></div>
             </div>
           </div>
-          <!-- /.card-body -->
         </div>
-        <!-- /.card -->
 
-        <!-- 상세 설명 및 이미지 카드 -->
         <div class="card shadow-sm mb-4">
           <div class="card-header form-section-title">
             <i class="bi bi-images me-1"></i> 상세 설명 및 이미지
           </div>
           <div class="card-body p-4">
-            <!-- 패딩 추가 -->
-            <!-- 설명 -->
             <div class="mb-3">
               <label for="description" class="form-label">상세 설명</label>
               <textarea
@@ -348,7 +293,6 @@
               ></div>
             </div>
 
-            <!-- 이미지 파일 업로드 -->
             <div class="mb-3">
               <label for="imageFile" class="form-label">대표 이미지</label>
               <input
@@ -360,7 +304,6 @@
                 th:classappend="${#fields.hasErrors('imageUrl')} ? 'is-invalid' : ''"
                 aria-describedby="imageFeedback"
               />
-              <!-- 이미지 유효성 검사 메시지 -->
               <div
                 id="imageFeedback"
                 class="invalid-feedback"
@@ -371,8 +314,6 @@
                 최대 1개, 10MB 이하의 이미지 파일(PNG, JPG, GIF)을 업로드할 수
                 있습니다. (선택 사항)
               </div>
-
-              <!-- 현재 이미지 미리보기 (수정 모드 시) -->
               <div
                 th:if="${isEditMode and currentImageUrl != null and !currentImageUrl.isEmpty()}"
                 class="mt-3 current-image-preview"
@@ -391,7 +332,6 @@
                 <th:block
                   th:unless="${#strings.startsWith(currentImageUrl, 'http')}"
                 >
-                  <!-- 이미지 경로 수정 -->
                   <img
                     th:src="@{/uploads/{filename}(filename=${currentImageUrl})}"
                     alt="현재 이미지"
@@ -412,208 +352,42 @@
               </div>
             </div>
           </div>
-          <!-- /.card-body -->
         </div>
-        <!-- /.card -->
 
-        <!-- 버튼 영역 -->
         <div class="text-end mt-4 pt-3 border-top">
-          <!-- 구분선 및 위쪽 여백 추가 -->
           <button type="submit" class="btn btn-primary btn-lg">
-            <!-- 버튼 크기 증가 -->
             <i class="bi bi-check-lg me-1"></i>
-            <span th:text="${isEditMode ? '정보 수정 완료' : '음식점 등록하기'}"
-              >저장</span
-            >
+            <span
+              th:text="${isEditMode ? '정보 수정 완료' : '음식점 등록하기'}"
+            ></span>
           </button>
           <a
             th:href="${isEditMode ? '/restaurants/' + restaurantId : '/restaurants'}"
             class="btn btn-outline-secondary btn-lg"
           >
-            <!-- 버튼 크기 증가 -->
             <i class="bi bi-x-lg me-1"></i>취소
           </a>
         </div>
       </form>
-      <!-- </form> 태그 닫기 -->
     </div>
-    <!-- /.container -->
 
-    <!-- Bootstrap JS Bundle -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS Bundle (이것보다 앞에 와도 됨) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- 유효성 검사 및 카테고리 토글 JavaScript -->
+    <!-- Thymeleaf 변수 전달용 인라인 스크립트 -->
     <script th:inline="javascript">
-      /*<![CDATA[*/
-      // Bootstrap 5 Form Validation Script
-      (() => {
-        'use strict';
-        const forms = document.querySelectorAll('.needs-validation');
-        Array.from(forms).forEach((form) => {
-          form.addEventListener(
-            'submit',
-            (event) => {
-              // 카테고리 유효성 검사 추가
-              const finalCategoryInput =
-                document.getElementById('finalCategory');
-              if (!finalCategoryInput.value) {
-                const categorySelect =
-                  document.getElementById('categorySelect');
-                const newCategoryInput =
-                  document.getElementById('newCategoryInput');
-                const feedback = document.getElementById('categoryFeedback');
-                if (categorySelect && !categorySelect.closest('.d-none')) {
-                  // 선택 모드일 때
-                  categorySelect.classList.add('is-invalid');
-                } else if (
-                  newCategoryInput &&
-                  !newCategoryInput.closest('.d-none')
-                ) {
-                  // 입력 모드일 때
-                  newCategoryInput.classList.add('is-invalid');
-                }
-                if (feedback)
-                  feedback.textContent = '카테고리를 선택하거나 입력해주세요.';
-              }
-
-              if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-              }
-
-              form.classList.add('was-validated');
-            },
-            false
-          );
-        });
-      })();
-
-      // 카테고리 토글 JavaScript
-      document.addEventListener('DOMContentLoaded', function () {
-        const categorySelect = document.getElementById('categorySelect');
-        const newCategoryInput = document.getElementById('newCategoryInput');
-        const finalCategory = document.getElementById('finalCategory');
-        const toggleCategoryBtn = document.getElementById('toggleCategoryBtn');
-        const categorySelectWrapper = document.getElementById(
-          'categorySelectWrapper'
-        );
-        const newCategoryWrapper =
-          document.getElementById('newCategoryWrapper');
-        const categoryFeedback = document.getElementById('categoryFeedback');
-
-        const existingCategories = /*[[${allCategories}]]*/ [];
-        const initialCategoryValue = finalCategory.value;
-        const isEditMode = /*[[${isEditMode}]]*/ false;
-        let isAddingNew = false; // 현재 새 카테고리 입력 모드인지 여부
-
-        function clearCategoryValidation() {
-          if (categorySelect) categorySelect.classList.remove('is-invalid');
-          if (newCategoryInput) newCategoryInput.classList.remove('is-invalid');
-          if (categoryFeedback) categoryFeedback.textContent = '';
-        }
-
-        function switchToCategorySelect() {
-          clearCategoryValidation();
-          if (categorySelectWrapper)
-            categorySelectWrapper.classList.remove('d-none');
-          if (newCategoryWrapper) newCategoryWrapper.classList.add('d-none');
-          if (toggleCategoryBtn) {
-            toggleCategoryBtn.innerHTML = '<i class="bi bi-pencil-fill"></i>';
-            toggleCategoryBtn.title = '새 카테고리 직접 입력';
-          }
-          if (categorySelect) {
-            // 수정 모드이고 초기값이 기존 목록에 없으면 선택 안 함
-            if (
-              !(
-                isEditMode &&
-                initialCategoryValue &&
-                !existingCategories.includes(initialCategoryValue)
-              )
-            ) {
-              categorySelect.value = initialCategoryValue || ''; // 기존 값 선택 유지 또는 초기화
-            } else {
-              categorySelect.value = ''; // 초기값 없으면 빈 값
-            }
-            finalCategory.value = categorySelect.value; // finalCategory 업데이트
-          }
-          if (newCategoryInput) newCategoryInput.value = '';
-          isAddingNew = false;
-        }
-
-        function switchToNewCategoryInput() {
-          clearCategoryValidation();
-          if (categorySelectWrapper)
-            categorySelectWrapper.classList.add('d-none');
-          if (newCategoryWrapper) newCategoryWrapper.classList.remove('d-none');
-          if (toggleCategoryBtn) {
-            toggleCategoryBtn.innerHTML = '<i class="bi bi-list-ul"></i>'; // 아이콘 변경 (목록)
-            toggleCategoryBtn.title = '기존 카테고리에서 선택';
-          }
-          // 수정 모드이고 초기값이 기존 목록에 없으면 해당 값 설정
-          if (
-            isEditMode &&
-            initialCategoryValue &&
-            !existingCategories.includes(initialCategoryValue)
-          ) {
-            if (newCategoryInput) newCategoryInput.value = initialCategoryValue;
-            finalCategory.value = initialCategoryValue;
-          } else {
-            if (newCategoryInput) newCategoryInput.value = '';
-            finalCategory.value = '';
-          }
-          if (newCategoryInput) newCategoryInput.focus();
-          isAddingNew = true;
-        }
-
-        // 초기 상태 설정
-        if (
-          isEditMode &&
-          initialCategoryValue &&
-          !existingCategories.includes(initialCategoryValue)
-        ) {
-          // 수정 모드이고, 초기 카테고리 값이 기존 목록에 없으면 -> 새 카테고리 입력 모드로 시작
-          switchToNewCategoryInput();
-        } else {
-          // 그 외의 경우 (등록 모드 또는 초기값이 기존 목록에 있는 경우) -> 카테고리 선택 모드로 시작
-          switchToCategorySelect();
-        }
-
-        // 토글 버튼 이벤트 리스너
-        if (toggleCategoryBtn) {
-          toggleCategoryBtn.addEventListener('click', function () {
-            if (isAddingNew) {
-              switchToCategorySelect();
-            } else {
-              switchToNewCategoryInput();
-            }
-          });
-        }
-
-        // 카테고리 선택 시 finalCategory 업데이트
-        if (categorySelect) {
-          categorySelect.addEventListener('change', function () {
-            if (!isAddingNew) {
-              finalCategory.value = this.value;
-              clearCategoryValidation(); // 값 변경 시 유효성 오류 제거
-            }
-          });
-        }
-
-        // 새 카테고리 입력 시 finalCategory 업데이트
-        if (newCategoryInput) {
-          newCategoryInput.addEventListener('input', function () {
-            if (isAddingNew) {
-              finalCategory.value = this.value.trim();
-              clearCategoryValidation(); // 값 변경 시 유효성 오류 제거
-            }
-          });
-        }
-      });
-      /*]]>*/
+      const allCategories = /*[[${allCategories}]]*/ [];
+      const isEditMode = /*[[${isEditMode}]]*/ false;
+      const initialCategoryValue =
+        /*[[${restaurantRequestDto?.category}]]*/ null; // DTO 필드 직접 접근
+      const hasCategoryError = /*[[${#fields.hasErrors('category')}]]*/ false;
     </script>
+
+    <!-- 외부 JavaScript 파일 로드 -->
+    <script src="/js/validation.js"></script>
+    <script src="/js/restaurant-form.js"></script>
+    <script src="/js/image-error.js"></script>
+    <!-- 미리보기 이미지 에러 처리용 -->
   </body>
 </html>

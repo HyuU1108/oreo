@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<!-- 네임스페이스 추가 -->
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  lang="ko"
+>
   <head>
     <meta charset="UTF-8" />
     <title>찜한 음식점 | OREO</title>
@@ -24,10 +29,8 @@
         max-width: 960px;
         margin: 4rem auto;
       }
-      /* --- 카드 및 이미지 크기 고정 스타일 (restaurants/list.html과 동일) --- */
       .restaurant-card {
-        /* 카드 클래스 명시 */
-        height: 250px; /* 카드 전체 높이 고정 */
+        height: 250px;
         overflow: hidden;
       }
       .restaurant-card .row.g-0 {
@@ -39,7 +42,6 @@
         border-radius: var(--bs-card-inner-border-radius) 0 0
           var(--bs-card-inner-border-radius);
         overflow: hidden;
-        /* height 제거 (row 높이 100% 따름) */
       }
       .card-img-link {
         display: block;
@@ -49,7 +51,6 @@
         cursor: pointer;
       }
       .card-img {
-        /* list-card-img 클래스명 통일 */
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -100,7 +101,6 @@
       .rating-stars .bi-star {
         color: #e0e0e0;
       }
-      /* 작은 화면 처리 (restaurants/list.html과 동일하게) */
       @media (max-width: 767.98px) {
         .favorite-container {
           padding-left: 1rem;
@@ -127,7 +127,7 @@
     </style>
   </head>
   <body>
-    <!-- 네비게이션 바 -->
+    <!-- *** 네비게이션 바 코드 복원 *** -->
     <nav
       class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm"
     >
@@ -256,10 +256,8 @@
       <div th:if="${favorites != null and !favorites.isEmpty()}">
         <div class="row row-cols-1 row-cols-md-2 g-4">
           <div class="col" th:each="restaurant : ${favorites}">
-            <!-- 카드 클래스 추가 및 h-100 제거 -->
-            <div class="card shadow-sm restaurant-card">
+            <div class="card h-100 shadow-sm restaurant-card">
               <div class="row g-0">
-                <!-- 이미지 컬럼 -->
                 <div class="col-md-4 img-col">
                   <a
                     th:href="@{/restaurants/{id}(id=${restaurant.id})}"
@@ -294,7 +292,6 @@
                     </div>
                   </a>
                 </div>
-                <!-- 정보 영역 -->
                 <div class="col-md-8 d-flex flex-column info-col">
                   <div class="card-body pb-2">
                     <h5
@@ -324,7 +321,6 @@
                       ></span>
                     </p>
                   </div>
-                  <!-- 푸터 영역 -->
                   <div
                     class="card-footer bg-transparent border-top-0 mt-auto text-end pt-0 pb-2 pe-2 action-buttons"
                   >
@@ -354,7 +350,7 @@
         </div>
       </div>
 
-      <!-- 찜이 비어있을 경우 -->
+      <!-- 찜 없을 때 -->
       <div
         th:if="${favorites == null or favorites.isEmpty()}"
         class="text-center text-muted p-5 bg-white rounded shadow-sm mt-4"
