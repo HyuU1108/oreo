@@ -1,0 +1,87 @@
+-- -----------------------------------------------------
+-- 테이블: users
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `favorites`;
+DROP TABLE IF EXISTS `reviews`;
+DROP TABLE IF EXISTS `restaurants`;
+DROP TABLE IF EXISTS `users`;
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '사용자 ID (Java Long)',
+  `email` VARCHAR(255) NOT NULL COMMENT '이메일',
+  `password` VARCHAR(255) NOT NULL COMMENT '비밀번호 (암호화됨)',
+  `nickname` VARCHAR(100) NOT NULL COMMENT '닉네임',
+  `role` VARCHAR(50) NOT NULL DEFAULT 'USER' COMMENT '사용자 역할',
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `uk_user_email` (`email` ASC) VISIBLE,
+  UNIQUE INDEX `uk_user_nickname` (`nickname` ASC) VISIBLE)
+ENGINE = InnoDB
+COMMENT = '사용자 정보 테이블';
+
+
+-- -----------------------------------------------------
+-- 테이블: restaurants
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `restaurants` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '음식점 ID (Java Integer)',
+  `name` VARCHAR(255) NOT NULL COMMENT '음식점 이름',
+  `address` VARCHAR(500) NULL DEFAULT NULL COMMENT '주소',
+  `phone` VARCHAR(20) NULL DEFAULT NULL COMMENT '전화번호',
+  `description` TEXT NULL DEFAULT NULL COMMENT '설명',
+  `category` VARCHAR(100) NULL DEFAULT NULL COMMENT '카테고리',
+  `image_url` VARCHAR(255) NULL DEFAULT NULL COMMENT '이미지 파일명 또는 URL',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+COMMENT = '음식점 정보 테이블';
+
+
+-- -----------------------------------------------------
+-- 테이블: reviews
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `reviews` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '리뷰 ID (Java Long)',
+  `content` TEXT NULL DEFAULT NULL COMMENT '리뷰 내용',
+  `rating` INT NULL DEFAULT NULL COMMENT '별점 (1-5)',
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성 시간',
+  `user_id` BIGINT NOT NULL COMMENT '작성자 ID (users.id 참조)',
+  `restaurant_id` INT NOT NULL COMMENT '대상 음식점 ID (restaurants.id 참조)',
+  PRIMARY KEY (`id`),
+  INDEX `fk_reviews_user_idx` (`user_id` ASC) VISIBLE,
+  INDEX `fk_reviews_restaurant_idx` (`restaurant_id` ASC) VISIBLE,
+  CONSTRAINT `fk_reviews_user`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_reviews_restaurant`
+    FOREIGN KEY (`restaurant_id`)
+    REFERENCES `restaurants` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+COMMENT = '리뷰 정보 테이블';
+
+
+-- -----------------------------------------------------
+-- 테이블: favorites
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `favorites` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '즐겨찾기 ID (Java Long)',
+  `user_id` BIGINT NOT NULL COMMENT '사용자 ID (users.id 참조)',
+  `restaurant_id` INT NOT NULL COMMENT '음식점 ID (restaurants.id 참조)',
+  PRIMARY KEY (`id`),
+  INDEX `fk_favorites_user_idx` (`user_id` ASC) VISIBLE,
+  INDEX `fk_favorites_restaurant_idx` (`restaurant_id` ASC) VISIBLE,
+  UNIQUE INDEX `uk_favorite_user_restaurant` (`user_id` ASC, `restaurant_id` ASC) VISIBLE COMMENT '사용자별 음식점 즐겨찾기 중복 방지',
+  CONSTRAINT `fk_favorites_user`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_favorites_restaurant`
+    FOREIGN KEY (`restaurant_id`)
+    REFERENCES `restaurants` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+COMMENT = '찜/즐겨찾기 정보 테이블';

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>세션 로그인 테스트</title>
+</head>
+
+<body>
+    <!-- 네비게이션 바 -->
+    <nav style="background-color: #f5f5f5; padding: 10px;">
+        <a th:href="@{/}" style="margin-right: 15px;">🏠 메인</a>
+        <a th:href="@{/restaurants}" style="margin-right: 15px;">🍽 음식점 목록</a>
+        <a th:href="@{/favorites}" style="margin-right: 15px;" th:if="${session.loginUser != null}">❤️ 찜 목록</a>
+
+        <span style="float: right;">
+            <span th:if="${session.loginUser != null}">
+                <span th:text="|${session.loginUser.nickname}님|"></span>
+                <a th:href="@{/mypage}" style="margin-left: 10px;">마이페이지</a>
+                <a th:href="@{/logout}" style="margin-left: 10px;">로그아웃</a>
+            </span>
+            <span th:if="${session.loginUser == null}">
+                <a th:href="@{/login}">로그인</a>
+                <a th:href="@{/register}" style="margin-left: 10px;">회원가입</a>
+            </span>
+        </span>
+    </nav>
+    <h2>세션 로그인 테스트 페이지</h2>
+
+    <div th:if="${nickname}">
+        <p><strong th:text="${nickname}"></strong> 님, 환영합니다!</p>
+        <p>🆔 세션 ID: <span th:text="${sessionId}"></span></p>
+
+        <h3>🍪 쿠키 정보:</h3>
+        <ul>
+            <li th:each="entry : ${cookies}">
+                <span th:text="${entry.key}"></span> = <span th:text="${entry.value}"></span>
+            </li>
+        </ul>
+
+        <p><a th:href="@{/logout}">로그아웃</a></p>
+    </div>
+
+    <div th:if="${nickname == null}">
+        <p style="color:red;">로그인이 필요합니다.</p>
+        <a th:href="@{/login}">로그인 페이지로 이동</a>
+    </div>
+</body>
+
+</html>
