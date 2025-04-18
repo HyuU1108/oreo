@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>마이페이지 | OREO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap 5 & Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+
+    <style>
+      body {
+        padding-top: 56px; /* Fixed navbar height */
+        background-color: #f8f9fa;
+      }
+      .mypage-container {
+        max-width: 650px; /* 너비 약간 증가 */
+        margin: 4rem auto; /* 상하 여백 조정 */
+        padding: 2.5rem; /* 내부 여백 조정 */
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07); /* 그림자 약간 조정 */
+        border: 1px solid #eee;
+      }
+      .form-section {
+        margin-bottom: 3rem; /* 섹션 간 간격 증가 */
+        padding-bottom: 2rem; /* 섹션 하단 여백 */
+        border-bottom: 1px solid #eee; /* 섹션 구분선 */
+      }
+      .form-section:last-of-type {
+        margin-bottom: 0; /* 마지막 섹션 하단 마진 제거 */
+        padding-bottom: 0; /* 마지막 섹션 하단 패딩 제거 */
+        border-bottom: none; /* 마지막 섹션 구분선 제거 */
+      }
+      .form-section h5 {
+        color: #495057;
+        font-weight: 500;
+      }
+      .navbar {
+        border-bottom: 1px solid #dee2e6;
+      }
+      .user-info-section {
+        background-color: #e9ecef;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2.5rem;
+        text-align: left; /* 정보 좌측 정렬 */
+      }
+      .user-info-section p {
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+      }
+      .user-info-section strong {
+        display: inline-block;
+        min-width: 70px; /* 라벨 너비 고정 */
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 네비게이션 바 (다른 페이지와 동일) -->
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">
+          <i class="bi bi-house-door-fill"></i> 메인
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/restaurants}">
+                <i class="bi bi-card-checklist"></i> 음식점 목록
+              </a>
+            </li>
+            <li class="nav-item" th:if="${session.loginUser != null}">
+              <a class="nav-link" th:href="@{/favorites}">
+                <i class="bi bi-heart-fill text-danger"></i> 찜 목록
+              </a>
+            </li>
+          </ul>
+          <div class="d-flex align-items-center">
+            <div th:if="${session.loginUser != null}" class="navbar-text">
+              <!-- 드롭다운으로 변경 (메인 페이지 참고) -->
+              <div class="dropdown">
+                <button
+                  class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                  type="button"
+                  id="userDropdownNav"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-person-circle me-1"></i>
+                  <strong th:text="${session.loginUser.nickname}">사용자</strong
+                  >님
+                </button>
+                <ul
+                  class="dropdown-menu dropdown-menu-end"
+                  aria-labelledby="userDropdownNav"
+                >
+                  <li>
+                    <a class="dropdown-item active" th:href="@{/mypage}"
+                      ><i class="bi bi-gear-fill me-2"></i>마이페이지</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" th:href="@{/favorites}"
+                      ><i class="bi bi-heart-fill text-danger me-2"></i>내 찜
+                      목록</a
+                    >
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a class="dropdown-item text-danger" th:href="@{/logout}"
+                      ><i class="bi bi-box-arrow-right me-2"></i>로그아웃</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- 비로그인 시 네비게이션 바에는 마이페이지 버튼 없음 (UserController에서 리다이렉트 처리) -->
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="mypage-container">
+        <h3 class="mb-4 text-center fw-bold">
+          <i class="bi bi-person-badge me-2"></i>마이페이지
+        </h3>
+
+        <!-- 사용자 기본 정보 표시 -->
+        <div class="user-info-section" th:if="${user != null}">
+          <p>
+            <i class="bi bi-envelope-fill me-2"></i><strong>이메일:</strong>
+            <span th:text="${user.email}"></span>
+          </p>
+          <p>
+            <i class="bi bi-person-vcard me-2"></i><strong>닉네임:</strong>
+            <span th:text="${user.nickname}"></span>
+          </p>
+        </div>
+
+        <!-- 성공 & 오류 메시지 -->
+        <div
+          th:if="${message}"
+          class="alert alert-success d-flex align-items-center"
+          role="alert"
+        >
+          <i class="bi bi-check-circle-fill me-2"></i>
+          <div th:text="${message}"></div>
+        </div>
+        <div
+          th:if="${error}"
+          class="alert alert-danger d-flex align-items-center"
+          role="alert"
+        >
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <div th:text="${error}"></div>
+        </div>
+
+        <!-- 닉네임 수정 -->
+        <div class="form-section">
+          <h5 class="mb-3">
+            <i class="bi bi-pencil-square me-2"></i>닉네임 수정
+          </h5>
+          <form
+            th:action="@{/mypage/update-nickname}"
+            method="post"
+            class="needs-validation"
+            novalidate
+          >
+            <div class="input-group mb-3">
+              <!-- Input group 사용 -->
+              <span class="input-group-text"
+                ><i class="bi bi-person-badge"></i
+              ></span>
+              <input
+                type="text"
+                name="nickname"
+                class="form-control"
+                th:value="${user?.nickname}"
+                placeholder="새 닉네임 입력"
+                required
+              />
+              <button type="submit" class="btn btn-outline-primary">
+                변경하기
+              </button>
+              <div class="invalid-feedback">닉네임을 입력해주세요.</div>
+            </div>
+          </form>
+        </div>
+
+        <!-- 비밀번호 변경 -->
+        <div class="form-section">
+          <h5 class="mb-3"><i class="bi bi-key-fill me-2"></i>비밀번호 변경</h5>
+          <form
+            th:action="@{/mypage/update-password}"
+            method="post"
+            class="needs-validation"
+            novalidate
+          >
+            <div class="form-floating mb-3">
+              <input
+                type="password"
+                name="currentPassword"
+                class="form-control"
+                id="currentPassword"
+                placeholder="현재 비밀번호"
+                required
+              />
+              <label for="currentPassword">현재 비밀번호</label>
+              <div class="invalid-feedback">현재 비밀번호를 입력해주세요.</div>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                type="password"
+                name="newPassword"
+                class="form-control"
+                id="newPassword"
+                placeholder="새 비밀번호"
+                required
+              />
+              <label for="newPassword">새 비밀번호</label>
+              <div class="invalid-feedback">새 비밀번호를 입력해주세요.</div>
+            </div>
+            <button type="submit" class="btn btn-success w-100">
+              <!-- 색상 및 전체 너비 변경 -->
+              비밀번호 변경하기
+            </button>
+          </form>
+        </div>
+
+        <!-- 홈으로 이동 버튼 제거 (네비게이션 바 이용) -->
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Bootstrap 5 Form Validation Script
+      (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach((form) => {
+          form.addEventListener(
+            'submit',
+            (event) => {
+              if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            },
+            false
+          );
+        });
+      })();
+    </script>
+  </body>
+</html>
